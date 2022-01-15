@@ -40,7 +40,15 @@ export const BudgetsProvider = ({ children }) => {
         })
     };
     const deleteBudget = ({ id }) => {
-        setBudgets(prevBudgets => prevBudgets.filter(budget => budget.id !== id));
+        setExpenses(prevExpenses => {
+            return prevExpenses.map(expense => {
+                if (expense.budgetId !== id) return expense;
+                return { ...expense, budgetId: UNCATEGORIZED_BUDGET_ID };
+            });
+        })
+        setBudgets(prevBudgets => {
+            return prevBudgets.filter(budget => budget.id !== id);
+        });
     };
     const deleteExpense = ({ id }) => {
         setExpenses(prevExpenses => prevExpenses.filter(expense => expense.id !== id));

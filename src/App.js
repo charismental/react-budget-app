@@ -4,6 +4,7 @@ import UncategorizedBudgetCard from "./components/UncategorizedBudgetCard";
 import TotalBudgetCard from "./components/TotalBudgetCard";
 import AddBudgetModal from "./components/AddBudgetModal";
 import AddExpenseModal from "./components/AddExpenseModal";
+import ViewExpensesModal from "./components/ViewExpensesModal";
 import { useState } from 'react';
 import { UNCATEGORIZED_BUDGET_ID, useBudgets } from './contexts/BudgetContext';
 
@@ -11,6 +12,7 @@ function App() {
   const [showAddBudgetModal, setShowAddBudgetModal] = useState(false);
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
   const [addExpenseModalBudgetId, setAddExpenseModalBudgetId] = useState();
+  const [viewExpensesModalBudgetId, setViewExpensesModalBudgetId] = useState();
   const { budgets, getBudgetExpenses } = useBudgets();
 
   const openAddExpenseModal = (budgetId) => {
@@ -28,9 +30,19 @@ function App() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1rem", alignItems: "flex-start" }}>
           {budgets.map(({ id, max, name }) => {
             const amount = getBudgetExpenses(id).reduce((total, expense) => total + expense.amount, 0);
-            return <BudgetCard key={id} amount={amount} max={max} name={name} onAddExpenseClick={() => openAddExpenseModal(id)}></BudgetCard>
+            return <BudgetCard
+              key={id}
+              amount={amount}
+              max={max}
+              name={name}
+              onAddExpenseClick={() => openAddExpenseModal(id)}
+              onViewExpensesClick={() => setViewExpensesModalBudgetId(id)}
+            />
           })}
-          <UncategorizedBudgetCard onAddExpenseClick={() => openAddExpenseModal(UNCATEGORIZED_BUDGET_ID)} />
+          <UncategorizedBudgetCard
+            onViewExpensesClick={() => setViewExpensesModalBudgetId(UNCATEGORIZED_BUDGET_ID)}
+            onAddExpenseClick={() => openAddExpenseModal(UNCATEGORIZED_BUDGET_ID)}
+          />
           <TotalBudgetCard />
         </div>
       </Container>
@@ -40,6 +52,7 @@ function App() {
         show={showAddExpenseModal}
         handleClose={() => setShowAddExpenseModal(false)}
       />
+      <ViewExpensesModal budgetId={viewExpensesModalBudgetId} handleClose={() => setViewExpensesModalBudgetId()} />
     </>
   )
 }
